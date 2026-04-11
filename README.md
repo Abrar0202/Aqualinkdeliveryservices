@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+    <title>Aqualink Delivery Service</title>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Aqualink Delivery Service</title>
+
 
     <style>
       body {
