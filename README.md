@@ -1,175 +1,252 @@
-    <title>Aqualink Delivery Service</title>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FreshMart Grocery - Advanced</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+    body{background:#f4f6f8;}
 
+    header{
+      background:linear-gradient(135deg,#16a34a,#15803d);
+      color:white;
+      padding:20px;
+      text-align:center;
+    }
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #f4f4f4;
-      }
+    nav{
+      background:#111;
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:15px;
+      padding:10px;
+    }
 
-      /* Navbar */
-      nav {
-        background: #333;
-        padding: 10px;
-        text-align: center;
-      }
-      nav img {
-        height: 50px;
-        display: block;
-        margin: auto;
-      }
-      nav button {
-        background: #ff6600;
-        border: none;
-        padding: 10px 20px;
-        margin: 5px;
-        color: white;
-        cursor: pointer;
-      }
-      nav button:hover {
-        background: #e65c00;
-      }
+    nav a{
+      color:white;
+      text-decoration:none;
+      font-weight:bold;
+    }
 
-      /* Sections */
-      .section {
-        display: none;
-        padding: 20px;
-      }
-      .active {
-        display: block;
-      }
+    .container{padding:20px;}
 
-      /* Card */
-      .card {
-        background: white;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 5px;
-      }
+    .top-bar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
 
-      /* Form */
-      form {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-      }
-      input,
-      button {
-        padding: 10px;
-        margin: 5px 0;
-        width: 100%;
-      }
+    input, select{
+      padding:10px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      flex:1;
+    }
 
-      /* Logo center */
-      .logo-center {
-        height: 120px;
-        display: block;
-        margin: 20px auto;
-      }
-    </style>
-  </head>
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:15px;
+    }
 
-  <body>
-    <!-- NAVBAR -->
-    <nav>
-      <img src="Qlogo.jpg" alt="Qlink Logo" />
-      <button onclick="showSection('home')">Home</button>
-      <button onclick="showSection('services')">Services</button>
-      <button onclick="showSection('contact')">Contact</button>
-    </nav>
+    .card{
+      background:white;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      transition:0.3s;
+    }
 
-    <!-- HOME -->
-    <div id="home" class="section active">
-      <h2>Welcome to Qlink Delivery 🚚</h2>
+    .card:hover{transform:scale(1.03);}
 
-      <img src="Qlogo.jpg" class="logo-center" />
+    .card img{
+      width:100%;
+      height:160px;
+      object-fit:cover;
+    }
 
-      <div class="card">
-        <p>Fast and reliable delivery at your doorstep.</p>
-        <button onclick="showDetails()">Show Details</button>
-        <p id="details"></p>
+    .card-body{padding:10px;}
+
+    .price{color:green;font-weight:bold;}
+
+    button{
+      background:#16a34a;
+      color:white;
+      border:none;
+      padding:10px;
+      width:100%;
+      cursor:pointer;
+      border-radius:8px;
+      margin-top:8px;
+    }
+
+    button:hover{background:#15803d;}
+
+    .cart{
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      margin-top:20px;
+    }
+
+    .cart-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:8px 0;
+      border-bottom:1px solid #eee;
+    }
+
+    .remove-btn{
+      background:red;
+      padding:5px 10px;
+      border:none;
+      color:white;
+      border-radius:6px;
+      cursor:pointer;
+      width:auto;
+    }
+
+    .remove-btn:hover{background:darkred;}
+
+    footer{
+      text-align:center;
+      padding:20px;
+      background:#111;
+      color:white;
+      margin-top:30px;
+    }
+
+    .badge{
+      background:red;
+      color:white;
+      padding:2px 8px;
+      border-radius:50%;
+      font-size:12px;
+      margin-left:5px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>FreshMart Grocery</h1>
+  <p>Advanced Grocery Store System</p>
+</header>
+
+<nav>
+  <a href="#">Home</a>
+  <a href="#shop">Shop</a>
+  <a href="#cartSection">Cart <span id="cartCount" class="badge">0</span></a>
+</nav>
+
+<div class="container">
+
+  <div class="top-bar">
+    <input type="text" id="search" placeholder="Search products..." onkeyup="renderProducts()" />
+    <select id="category" onchange="renderProducts()">
+      <option value="all">All Categories</option>
+      <option value="fruits">Fruits</option>
+      <option value="dairy">Dairy</option>
+      <option value="bakery">Bakery</option>
+    </select>
+  </div>
+
+  <div id="shop" class="grid"></div>
+
+  <div id="cartSection" class="cart">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <h3 id="total">Total: $0</h3>
+    <button onclick="checkout()">Checkout</button>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 FreshMart Grocery | Advanced Version
+</footer>
+
+<script>
+
+const products = [
+  {id:1,name:"Apple",price:2,cat:"fruits",img:"https://source.unsplash.com/300x200/?apple"},
+  {id:2,name:"Banana",price:1,cat:"fruits",img:"https://source.unsplash.com/300x200/?banana"},
+  {id:3,name:"Milk",price:1.5,cat:"dairy",img:"https://source.unsplash.com/300x200/?milk"},
+  {id:4,name:"Cheese",price:3,cat:"dairy",img:"https://source.unsplash.com/300x200/?cheese"},
+  {id:5,name:"Bread",price:2,cat:"bakery",img:"https://source.unsplash.com/300x200/?bread"}
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function renderProducts(){
+  let search = document.getElementById("search").value.toLowerCase();
+  let category = document.getElementById("category").value;
+
+  let filtered = products.filter(p=>{
+    return (category === "all" || p.cat === category) && p.name.toLowerCase().includes(search);
+  });
+
+  let html = "";
+  filtered.forEach(p=>{
+    html += `
+      <div class='card'>
+        <img src='${p.img}' />
+        <div class='card-body'>
+          <h3>${p.name}</h3>
+          <p class='price'>$${p.price}</p>
+          <button onclick='addToCart(${p.id})'>Add to Cart</button>
+        </div>
       </div>
-    </div>
+    `;
+  });
 
-    <!-- SERVICES -->
-    <div id="services" class="section">
-      <h2>Our Services</h2>
-      <div class="card">
-        <ul>
-          <li>Food Delivery</li>
-          <li>Parcel Delivery</li>
-          <li>Same Day Delivery</li>
-        </ul>
-        <button onclick="showDetails()">Show Details</button>
-        <p id="details"></p>
-      </div>
-    </div>
+  document.getElementById("shop").innerHTML = html;
+}
 
-    <!-- CONTACT -->
-    <div id="contact" class="section">
-      <h2>Contact Us</h2>
+function addToCart(id){
+  let item = products.find(p=>p.id===id);
+  cart.push(item);
+  localStorage.setItem("cart",JSON.stringify(cart));
+  updateCart();
+}
 
-      <div class="card">
-        <button onclick="showContact()">Show Contact Info</button>
-        <p id="contactInfo"></p>
-      </div>
+function updateCart(){
+  let html="";
+  let total=0;
 
-      <h3>Fill Form</h3>
-      <form onsubmit="return validateForm();">
-        <input type="text" id="name" placeholder="Enter Name" required="" />
-        <input type="email" id="email" placeholder="Enter Email" required="" />
+  cart.forEach((c,i)=>{
+    total += c.price;
+    html += `<div class='cart-item'>${c.name} - $${c.price} <button class='remove-btn' onclick='removeItem(${i})'>Remove</button></div>`;
+  });
 
-        <label id="captchaLabel"></label>
-        <input type="text" id="captchaInput" placeholder="Enter Captcha" required="" />
+  document.getElementById("cartItems").innerHTML = html;
+  document.getElementById("total").innerText = "Total: $" + total;
+  document.getElementById("cartCount").innerText = cart.length;
+}
 
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+function removeItem(index){
+  if(confirm("Are you sure you want to remove this item?")){
+    cart.splice(index,1);
+    localStorage.setItem("cart",JSON.stringify(cart));
+    updateCart();
+  }
+}
 
-    <script>
-      /* Section Switch */
-      function showSection(section) {
-        document.querySelectorAll(".section").forEach((sec) => {
-          sec.classList.remove("active");
-        });
-        document.getElementById(section).classList.add("active");
-      }
+function checkout(){
+  alert("Order placed successfully!");
+  cart = [];
+  localStorage.setItem("cart",JSON.stringify(cart));
+  updateCart();
+}
 
-      /* Details */
-      function showDetails() {
-        let info = "Address: Main Road, City | Location: Near Market | Contact: +91 9876543210";
-        document.querySelectorAll("#details").forEach((el) => {
-          el.innerText = info;
-        });
-      }
+renderProducts();
+updateCart();
 
-      /* Contact Info */
-      function showContact() {
-        document.getElementById("contactInfo").innerText =
-          "Address: Nazma Street, Doha | Location: Doha,Qatar | Phone: +974 77365917";
-      }
+</script>
 
-      /* CAPTCHA */
-      let num1 = Math.floor(Math.random() * 10);
-      let num2 = Math.floor(Math.random() * 10);
-
-      document.getElementById("captchaLabel").innerText = "Captcha: " + num1 + " + " + num2 + " = ?";
-
-      function validateForm() {
-        let userAnswer = document.getElementById("captchaInput").value;
-
-        if (userAnswer != num1 + num2) {
-          alert("Wrong captcha!");
-          return false;
-        }
-
-        alert("Form submitted successfully!");
-        return true;
-      }
-    </script>
-  </body>
+</body>
 </html>
