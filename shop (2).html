@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fresh Mart - Online Store</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+body{background:#f4f4f4;}
+header{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+header h1{margin-bottom:5px;}
+nav{
+  background:#111;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:15px;
+  padding:10px;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+nav a:hover{color:#4ade80;}
+.container{padding:20px;max-width:1100px;margin:0 auto;}
+.top-bar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+input{
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  flex:1;
+}
+select{
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+button{
+  padding:10px 15px;
+  border:none;
+  background:#111;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+}
+button:hover{background:#333;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+.card{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  display:flex;
+  flex-direction:column;
+}
+.card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  background:#eee;
+}
+.card-body{padding:10px;flex:1;display:flex;flex-direction:column;}
+.card-body h3{font-size:16px;margin-bottom:5px;}
+.card-body p.desc{font-size:13px;color:#666;margin-bottom:8px;flex:1;}
+.price{color:green;font-weight:bold;margin-bottom:8px;}
+.card-body button{width:100%;}
+.section-title{
+  font-size:22px;
+  margin:30px 0 15px 0;
+  border-left:5px solid #16a34a;
+  padding-left:10px;
+}
+.cart{
+  background:white;
+  padding:15px;
+  margin-top:20px;
+  border-radius:10px;
+}
+.cart-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+.cart-item:last-child{border-bottom:none;}
+.qty-controls{display:flex;align-items:center;gap:8px;}
+.qty-controls button{padding:4px 10px;}
+.remove{
+  background:red;
+  padding:5px 10px;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+.remove:hover{background:#c00;}
+.cart-total{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+  font-size:18px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:2px solid #111;
+}
+.contact{
+  background:white;
+  padding:15px;
+  margin-top:20px;
+  border-radius:10px;
+}
+.contact input, .contact textarea{
+  width:100%;
+  margin-bottom:10px;
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+.contact textarea{resize:vertical;min-height:80px;}
+.whatsapp{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#25D366;
+  color:white;
+  padding:15px;
+  border-radius:50px;
+  text-decoration:none;
+  font-weight:bold;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  z-index:200;
+}
+.checkout-box{
+  background:white;
+  padding:15px;
+  margin-top:20px;
+  border-radius:10px;
+}
+.checkout-box input{
+  width:100%;
+  margin-bottom:10px;
+}
+.empty-msg{color:#999;text-align:center;padding:20px;}
+footer{
+  text-align:center;
+  padding:20px;
+  color:#777;
+  font-size:13px;
+}
+.badge{
+  background:#16a34a;
+  color:white;
+  border-radius:20px;
+  padding:2px 8px;
+  font-size:12px;
+  margin-left:5px;
+}
+.cat-card{
+  cursor:pointer;
+  text-align:center;
+  transition:transform .15s;
+}
+.cat-card:hover{transform:translateY(-4px);}
+.cat-card img{height:120px;}
+.cat-card .card-body{
+  text-align:center;
+  padding:10px;
+}
+.cat-card.active{
+  outline:3px solid #16a34a;
+}
+@media(max-width:500px){
+  .top-bar{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🥬 Fresh Mart</h1>
+  <p>Fresh groceries delivered to your door</p>
+</header>
+
+<nav>
+  <a onclick="scrollToSection('products')">Products</a>
+  <a onclick="scrollToSection('cart')">Cart <span id="navCartCount" class="badge">0</span></a>
+  <a onclick="scrollToSection('checkout')">Checkout</a>
+  <a onclick="scrollToSection('contact')">Contact</a>
+</nav>
+
+<div class="container">
+
+  <div class="top-bar">
+    <input type="text" id="searchInput" placeholder="Search products..." oninput="renderProducts()">
+    <select id="categorySelect" onchange="onCategoryChange()">
+      <option value="all">All Categories</option>
+      <option value="fruit">Fruits</option>
+      <option value="vegetable">Vegetables</option>
+      <option value="dairy">Dairy</option>
+      <option value="bakery">Bakery</option>
+      <option value="meat">Meat & Poultry</option>
+      <option value="seafood">Seafood</option>
+      <option value="beverages">Beverages</option>
+      <option value="snacks">Snacks</option>
+      <option value="pantry">Pantry & Grains</option>
+      <option value="frozen">Frozen</option>
+      <option value="household">Household</option>
+    </select>
+  </div>
+
+  <h2 class="section-title" id="categories">Shop by Category</h2>
+  <div class="grid" id="categoryGrid"></div>
+
+  <h2 class="section-title" id="products">Products</h2>
+  <div class="grid" id="productGrid"></div>
+
+  <h2 class="section-title" id="cart">Your Cart</h2>
+  <div class="cart">
+    <div id="cartItems"></div>
+    <div class="cart-total">
+      <span>Total</span>
+      <span id="cartTotal">QR 0.00</span>
+    </div>
+  </div>
+
+  <h2 class="section-title" id="checkout">Checkout</h2>
+  <div class="checkout-box">
+    <input type="text" id="custName" placeholder="Full Name">
+    <input type="text" id="custPhone" placeholder="Phone Number">
+    <input type="text" id="custAddress" placeholder="Delivery Address">
+    <button onclick="placeOrder()">Place Order</button>
+  </div>
+
+  <h2 class="section-title" id="contact">Contact Us</h2>
+  <div class="contact">
+    <input type="text" id="contactName" placeholder="Your Name">
+    <input type="email" id="contactEmail" placeholder="Your Email">
+    <textarea id="contactMsg" placeholder="Your Message"></textarea>
+    <button onclick="sendContact()">Send Message</button>
+  </div>
+
+</div>
+
+<a class="whatsapp" href="https://wa.me/10000000000" target="_blank">💬 WhatsApp</a>
+
+<footer>© 2026 Fresh Mart. All rights reserved.</footer>
+
+<script>
+// ---------- Product Data ----------
+const products = [
+  // Fruits
+  {id:1, name:"Red Apples", category:"fruit", price:10.99, img:"https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400", desc:"Crisp and juicy red apples, 1kg pack."},
+  {id:2, name:"Bananas", category:"fruit", price:5.49, img:"https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400", desc:"Ripe yellow bananas, bunch of 6."},
+  {id:3, name:"Oranges", category:"fruit", price:8.99, img:"https://images.unsplash.com/photo-1547514701-42782101795e?w=400", desc:"Sweet juicy oranges, 1kg pack."},
+  {id:4, name:"Strawberries", category:"fruit", price:14.99, img:"https://images.unsplash.com/photo-1518635017498-87f514b751ba?w=400", desc:"Fresh strawberries, 250g punnet."},
+  {id:5, name:"Grapes", category:"fruit", price:12.49, img:"https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400", desc:"Seedless green grapes, 500g."},
+  {id:6, name:"Watermelon", category:"fruit", price:9.99, img:"https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400", desc:"Whole seedless watermelon."},
+  {id:7, name:"Mangoes", category:"fruit", price:11.99, img:"https://images.unsplash.com/photo-1553279768-865429fa0078?w=400", desc:"Sweet ripe mangoes, pack of 3."},
+
+  // Vegetables
+  {id:8, name:"Carrots", category:"vegetable", price:7.25, img:"https://images.unsplash.com/photo-1447175008436-054170c2e979?w=400", desc:"Fresh organic carrots, 500g."},
+  {id:9, name:"Broccoli", category:"vegetable", price:8.99, img:"https://images.unsplash.com/photo-1584270354949-1f7f8b0b0eb5?w=400", desc:"Farm fresh broccoli heads."},
+  {id:10, name:"Tomatoes", category:"vegetable", price:6.99, img:"https://images.unsplash.com/photo-1607305387299-a3d9611cd469?w=400", desc:"Vine-ripened tomatoes, 1kg."},
+  {id:11, name:"Cucumbers", category:"vegetable", price:4.99, img:"https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=400", desc:"Fresh crunchy cucumbers, pack of 3."},
+  {id:12, name:"Potatoes", category:"vegetable", price:5.99, img:"https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400", desc:"Farm potatoes, 2kg bag."},
+  {id:13, name:"Onions", category:"vegetable", price:4.49, img:"https://images.unsplash.com/photo-1508747703725-719777637510?w=400", desc:"Red onions, 1kg pack."},
+  {id:14, name:"Bell Peppers", category:"vegetable", price:9.49, img:"https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400", desc:"Mixed color bell peppers, pack of 3."},
+
+  // Dairy
+  {id:15, name:"Whole Milk", category:"dairy", price:11.99, img:"https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400", desc:"1 litre fresh whole milk."},
+  {id:16, name:"Cheddar Cheese", category:"dairy", price:18.50, img:"https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400", desc:"Aged cheddar cheese block, 250g."},
+  {id:17, name:"Greek Yogurt", category:"dairy", price:9.99, img:"https://images.unsplash.com/photo-1571212515416-fca88c02d4ea?w=400", desc:"Creamy Greek yogurt, 500g tub."},
+  {id:18, name:"Butter", category:"dairy", price:13.99, img:"https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400", desc:"Unsalted creamy butter, 250g."},
+  {id:19, name:"Eggs", category:"dairy", price:10.49, img:"https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400", desc:"Farm fresh eggs, tray of 12."},
+
+  // Bakery
+  {id:20, name:"Sourdough Bread", category:"bakery", price:14.99, img:"https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400", desc:"Freshly baked sourdough loaf."},
+  {id:21, name:"Croissants", category:"bakery", price:16.99, img:"https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400", desc:"Buttery croissants, pack of 4."},
+  {id:22, name:"Bagels", category:"bakery", price:12.99, img:"https://images.unsplash.com/photo-1585478259715-4d3f5f6b7a5c?w=400", desc:"Fresh baked bagels, pack of 6."},
+  {id:23, name:"Chocolate Cake", category:"bakery", price:29.99, img:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", desc:"Rich chocolate cake, whole."},
+
+  // Meat & Poultry
+  {id:24, name:"Chicken Breast", category:"meat", price:24.99, img:"https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400", desc:"Boneless chicken breast, 1kg."},
+  {id:25, name:"Beef Mince", category:"meat", price:32.99, img:"https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?w=400", desc:"Fresh ground beef mince, 500g."},
+  {id:26, name:"Lamb Chops", category:"meat", price:45.99, img:"https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=400", desc:"Tender lamb chops, 500g."},
+
+  // Seafood
+  {id:27, name:"Fresh Salmon", category:"seafood", price:39.99, img:"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400", desc:"Fresh Atlantic salmon fillet, 500g."},
+  {id:28, name:"Shrimp", category:"seafood", price:34.99, img:"https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=400", desc:"Peeled deveined shrimp, 500g."},
+
+  // Beverages
+  {id:29, name:"Orange Juice", category:"beverages", price:12.99, img:"https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400", desc:"Freshly squeezed orange juice, 1L."},
+  {id:30, name:"Mineral Water", category:"beverages", price:8.99, img:"https://images.unsplash.com/photo-1560023907-5f339617ea30?w=400", desc:"Pack of 6 mineral water bottles."},
+  {id:31, name:"Coffee Beans", category:"beverages", price:22.99, img:"https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400", desc:"Roasted arabica coffee beans, 250g."},
+  {id:32, name:"Green Tea", category:"beverages", price:14.99, img:"https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?w=400", desc:"Organic green tea bags, box of 25."},
+
+  // Snacks
+  {id:33, name:"Potato Chips", category:"snacks", price:6.99, img:"https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400", desc:"Crispy salted potato chips, 150g."},
+  {id:34, name:"Mixed Nuts", category:"snacks", price:19.99, img:"https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400", desc:"Roasted mixed nuts, 300g."},
+  {id:35, name:"Chocolate Bar", category:"snacks", price:5.49, img:"https://images.unsplash.com/photo-1511381939415-e44015466834?w=400", desc:"Milk chocolate bar, 100g."},
+
+  // Pantry & Grains
+  {id:36, name:"Basmati Rice", category:"pantry", price:16.99, img:"https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400", desc:"Premium basmati rice, 5kg bag."},
+  {id:37, name:"Pasta", category:"pantry", price:7.99, img:"https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400", desc:"Italian durum wheat pasta, 500g."},
+  {id:38, name:"Olive Oil", category:"pantry", price:28.99, img:"https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400", desc:"Extra virgin olive oil, 1L bottle."},
+  {id:39, name:"Sugar", category:"pantry", price:6.49, img:"https://images.unsplash.com/photo-1610725664285-7c57e6eeac3f?w=400", desc:"White granulated sugar, 2kg bag."},
+
+  // Frozen
+  {id:40, name:"Frozen Peas", category:"frozen", price:8.49, img:"https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=400", desc:"Frozen green peas, 500g bag."},
+  {id:41, name:"Ice Cream", category:"frozen", price:17.99, img:"https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=400", desc:"Vanilla ice cream tub, 1L."},
+  {id:42, name:"Frozen Pizza", category:"frozen", price:15.99, img:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400", desc:"Margherita frozen pizza, 400g."},
+
+  // Household
+  {id:43, name:"Dish Soap", category:"household", price:6.99, img:"https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=400", desc:"Lemon-scented dish washing liquid, 500ml."},
+  {id:44, name:"Paper Towels", category:"household", price:11.99, img:"https://images.unsplash.com/photo-1585236887892-fcaf6ad7cad3?w=400", desc:"Absorbent paper towels, pack of 6."},
+  {id:45, name:"Laundry Detergent", category:"household", price:24.99, img:"https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400", desc:"Liquid laundry detergent, 2L."}
+];
+
+let cart = {}; // {id: qty}
+
+// ---------- Category Data (photo matches category name) ----------
+const categories = [
+  {id:"fruit", name:"Fruits", img:"https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400"},
+  {id:"vegetable", name:"Vegetables", img:"https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400"},
+  {id:"dairy", name:"Dairy", img:"https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400"},
+  {id:"bakery", name:"Bakery", img:"https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"},
+  {id:"meat", name:"Meat & Poultry", img:"https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400"},
+  {id:"seafood", name:"Seafood", img:"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400"},
+  {id:"beverages", name:"Beverages", img:"https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400"},
+  {id:"snacks", name:"Snacks", img:"https://images.unsplash.com/photo-1600952841320-db92ec4047ca?w=400"},
+  {id:"pantry", name:"Pantry & Grains", img:"https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"},
+  {id:"frozen", name:"Frozen", img:"https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400"},
+  {id:"household", name:"Household", img:"https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=400"}
+];
+
+// ---------- Render Categories ----------
+function renderCategories(){
+  const grid = document.getElementById('categoryGrid');
+  const activeCat = document.getElementById('categorySelect').value;
+  grid.innerHTML = '';
+
+  categories.forEach(c=>{
+    const card = document.createElement('div');
+    card.className = 'card cat-card' + (activeCat === c.id ? ' active' : '');
+    card.onclick = () => selectCategory(c.id);
+    card.innerHTML = `
+      <img src="${c.img}" alt="${c.name}">
+      <div class="card-body"><h3>${c.name}</h3></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function selectCategory(id){
+  document.getElementById('categorySelect').value = id;
+  onCategoryChange();
+}
+
+function onCategoryChange(){
+  renderCategories();
+  renderProducts();
+}
+
+// ---------- Render Products ----------
+function renderProducts(){
+  const grid = document.getElementById('productGrid');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const category = document.getElementById('categorySelect').value;
+
+  const filtered = products.filter(p=>{
+    const matchesSearch = p.name.toLowerCase().includes(search);
+    const matchesCategory = category === 'all' || p.category === category;
+    return matchesSearch && matchesCategory;
+  });
+
+  grid.innerHTML = '';
+  if(filtered.length === 0){
+    grid.innerHTML = '<p class="empty-msg">No products found.</p>';
+    return;
+  }
+
+  filtered.forEach(p=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <p class="desc">${p.desc}</p>
+        <div class="price">QR ${p.price.toFixed(2)}</div>
+        <button onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ---------- Cart Functions ----------
+function addToCart(id){
+  cart[id] = (cart[id] || 0) + 1;
+  renderCart();
+}
+
+function changeQty(id, delta){
+  if(!cart[id]) return;
+  cart[id] += delta;
+  if(cart[id] <= 0) delete cart[id];
+  renderCart();
+}
+
+function removeFromCart(id){
+  delete cart[id];
+  renderCart();
+}
+
+function renderCart(){
+  const cartItemsDiv = document.getElementById('cartItems');
+  const ids = Object.keys(cart);
+  let total = 0;
+
+  if(ids.length === 0){
+    cartItemsDiv.innerHTML = '<p class="empty-msg">Your cart is empty.</p>';
+  } else {
+    cartItemsDiv.innerHTML = '';
+    ids.forEach(id=>{
+      const product = products.find(p=>p.id == id);
+      const qty = cart[id];
+      const subtotal = product.price * qty;
+      total += subtotal;
+
+      const item = document.createElement('div');
+      item.className = 'cart-item';
+      item.innerHTML = `
+        <span>${product.name}</span>
+        <div class="qty-controls">
+          <button onclick="changeQty(${id}, -1)">-</button>
+          <span>${qty}</span>
+          <button onclick="changeQty(${id}, 1)">+</button>
+        </div>
+        <span>QR ${subtotal.toFixed(2)}</span>
+        <button class="remove" onclick="removeFromCart(${id})">Remove</button>
+      `;
+      cartItemsDiv.appendChild(item);
+    });
+  }
+
+  document.getElementById('cartTotal').textContent = `QR ${total.toFixed(2)}`;
+  document.getElementById('navCartCount').textContent = ids.reduce((sum,id)=>sum+cart[id],0);
+}
+
+// ---------- Checkout ----------
+function placeOrder(){
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const ids = Object.keys(cart);
+
+  if(ids.length === 0){
+    alert('Your cart is empty. Please add products before checking out.');
+    return;
+  }
+  if(!name || !phone || !address){
+    alert('Please fill in your name, phone, and address to place the order.');
+    return;
+  }
+
+  alert(`Thank you, ${name}! Your order has been placed and will be delivered to:\n${address}\nWe will contact you at ${phone}.`);
+
+  cart = {};
+  renderCart();
+  document.getElementById('custName').value = '';
+  document.getElementById('custPhone').value = '';
+  document.getElementById('custAddress').value = '';
+}
+
+// ---------- Contact Form ----------
+function sendContact(){
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const msg = document.getElementById('contactMsg').value.trim();
+
+  if(!name || !email || !msg){
+    alert('Please fill in all fields before sending your message.');
+    return;
+  }
+
+  alert(`Thanks ${name}, your message has been sent! We'll get back to you at ${email}.`);
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactMsg').value = '';
+}
+
+// ---------- Nav Scroll ----------
+function scrollToSection(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+}
+
+// ---------- Init ----------
+renderCategories();
+renderProducts();
+renderCart();
+</script>
+
+</body>
+</html>
